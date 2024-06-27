@@ -40,6 +40,7 @@
             var xAleatorio;
             var yAleatorio;
             var pontos = 0;
+            var velocidade = 1000;
 
             function ajustaCanvas() {
                 tela.width = window.innerWidth;
@@ -84,6 +85,7 @@
                     pontos++;
                     alert('Acertou');
                     areaQueExibePontos.textContent = pontos;
+                    velocidade -= 250;
                 }
             }
 
@@ -95,7 +97,7 @@
             tela.onclick = dispara;
 
             ajustaCanvas();
-            setInterval(atualizaTela, 1000);
+            setInterval(atualizaTela, velocidade);
         </script>
     </body>
 </html>
