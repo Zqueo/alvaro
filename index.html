@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Álvaro</title>
+    <title>Tiro ao Álvaro</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        p {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            margin: 0;
+            color: white;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <canvas width="600" height="400"></canvas>
+    <canvas></canvas>
     <p>Pontuação: <span id="pontos">0</span></p>
     <script>
         var areaQueExibePontos = document.querySelector('#pontos');
         var tela = document.querySelector('canvas');
         var pincel = tela.getContext('2d');
 
-        pincel.fillStyle = 'lightgray';
-        pincel.fillRect(0, 0, 600, 400);
-
         var raio = 10;
         var xAleatorio;
         var yAleatorio;
         var pontos = 0;
+
+        function ajustaCanvas() {
+            tela.width = window.innerWidth;
+            tela.height = window.innerHeight;
+        }
 
         function desenhaCirculo(x, y, raio, cor) {
             pincel.fillStyle = cor;
@@ -29,9 +52,9 @@
         }
 
         function limpaTela() {
-            pincel.clearRect(0, 0, 600, 400);
+            pincel.clearRect(0, 0, tela.width, tela.height);
             pincel.fillStyle = 'lightgray';
-            pincel.fillRect(0, 0, 600, 400);
+            pincel.fillRect(0, 0, tela.width, tela.height);
         }
 
         function desenhaAlvo(x, y) {
@@ -51,8 +74,6 @@
             desenhaAlvo(xAleatorio, yAleatorio);
         }
 
-        setInterval(atualizaTela, 1000);
-
         function dispara(evento) {
             var x = evento.pageX - tela.offsetLeft;
             var y = evento.pageY - tela.offsetTop;
@@ -64,7 +85,15 @@
             }
         }
 
+        window.addEventListener('resize', function() {
+            ajustaCanvas();
+            atualizaTela();
+        });
+
         tela.onclick = dispara;
+
+        ajustaCanvas();
+        setInterval(atualizaTela, 1000);
     </script>
 </body>
 </html>
