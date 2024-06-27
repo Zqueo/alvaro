@@ -1,0 +1,175 @@
+<html><head> 
+  <title>Just a Clicker Game</title> 
+  <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Cor de fundo */
+        }
+        #score {
+            font-size: 24px;
+        }
+        #clickButton, .upgrade-button, #rebirthButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff; /* Cor do botão */
+            color: #fff; /* Cor do texto do botão */
+            border: none;
+            border-radius: 5px;
+            position: relative;
+        }
+        #clickButton:hover, .upgrade-button:hover, #rebirthButton:hover {
+            transform: scale(1.1); /* Efeito de crescimento ao passar o mouse */
+        }
+        #game-container {
+            background-image: url('background.jpg'); /* Adicione o caminho da sua imagem de fundo */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding: 20px;
+        }
+        .upgrade-menu, .rebirth-menu {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .upgrade-menu h2, .rebirth-menu h2 {
+            font-size: 20px;
+        }
+        .click-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff00; /* Cor do número exibido */
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 2;
+        }
+    </style> 
+ </head> 
+ <body> 
+  <div id="game-container"> 
+   <h1>Just a Clicker Game</h1> 
+   <p>Click the button to increase your score!</p> 
+   <p>Score: <span id="score">0</span></p> <button id="clickButton">Click me!</button> <button class="upgrade-button" id="openUpgradeMenu">Open Upgrade Menu</button> <button class="upgrade-button" id="openRebirthMenu">Rebirth</button> 
+   <div class="upgrade-menu"> 
+    <h2>Upgrade Menu</h2> 
+    <p>Score: <span id="currentScore">0</span></p> 
+    <p>Upgrade Cost: <span id="upgradeCost">10</span></p> <button class="upgrade-button" onclick="buyUpgrade(2)">Buy x2 Click</button> <button class="upgrade-button" onclick="buyUpgrade(5)">Buy x5 Click</button> <button class="upgrade-button" onclick="buyUpgrade(10)">Buy x10 Click</button> <button class="upgrade-button" onclick="closeUpgradeMenu()">Close Menu</button> 
+   </div> 
+   <div class="rebirth-menu"> 
+    <h2>Rebirth Menu</h2> 
+    <p>Rebirth Cost: <span id="rebirthCost">2.999999999999999e+44</span></p> <button class="upgrade-button" id="confirmRebirthButton" onclick="confirmRebirth()">Confirm Rebirth</button> <button class="upgrade-button" onclick="closeRebirthMenu()">Close Menu</button> 
+   </div> 
+   <div class="click-effect" id="clickEffect">
+     +1 
+   </div> 
+  </div> 
+  <audio id="clickSound" src="click-sound.mp3"></audio> 
+  <script>
+        var score = 0;
+        var clickValue = 1;
+        var upgradeCost = 10;
+        var rebirthCost = 2.999999999999999e+44;
+        var rebirthMultiplier = 2;
+        var autoClickInterval;
+        var isRebirthed = false;
+
+        function increaseScore() {
+            score += clickValue;
+            document.getElementById("score").innerHTML = score;
+            document.getElementById("currentScore").innerHTML = score;
+            playClickSound();
+            showClickEffect();
+        }
+
+        function buyUpgrade(multiplier) {
+            var cost = upgradeCost * multiplier;
+            if (score >= cost) {
+                score -= cost;
+                clickValue *= multiplier;
+                upgradeCost = 10; // Reinicia o custo dos upgrades
+                document.getElementById("score").innerHTML = score;
+                document.getElementById("currentScore").innerHTML = score;
+                document.getElementById("upgradeCost").innerHTML = upgradeCost;
+            } else {
+                alert("Not enough score to buy the upgrade!");
+            }
+        }
+
+        function openUpgradeMenu() {
+            document.querySelector(".upgrade-menu").style.display = "block";
+            document.getElementById("currentScore").innerHTML = score;
+            document.getElementById("upgradeCost").innerHTML = upgradeCost;
+        }
+
+        function closeUpgradeMenu() {
+            document.querySelector(".upgrade-menu").style.display = "none";
+        }
+
+        function confirmRebirth() {
+            if (score >= rebirthCost) {
+                score = 0;
+                clickValue = 1;
+                rebirthCost *= rebirthMultiplier;
+                upgradeCost = 10; // Reinicia o custo dos upgrades
+                document.getElementById("score").innerHTML = score;
+                document.getElementById("rebirthCost").innerHTML = rebirthCost.toExponential(44); // Formata o custo do rebirth
+                isRebirthed = true;
+                startAutoClick();
+            } else {
+                alert("Not enough score to rebirth!");
+            }
+        }
+
+        function openRebirthMenu() {
+            if (!isRebirthed) {
+                document.querySelector(".rebirth-menu").style.display = "block";
+                document.getElementById("rebirthCost").innerHTML = rebirthCost.toExponential(44); // Formata o custo do rebirth
+            }
+        }
+
+        function closeRebirthMenu() {
+            document.querySelector(".rebirth-menu").style.display = "none";
+        }
+
+        function startAutoClick() {
+            autoClickInterval = setInterval(function() {
+                increaseScore();
+            }, 1600); // Aumenta a cada segundo (1000 milissegundos)
+        }
+
+        function stopAutoClick() {
+            clearInterval(autoClickInterval);
+        }
+
+        function playClickSound() {
+            var audio = document.getElementById("clickSound");
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+        function showClickEffect() {
+            var clickEffect = document.getElementById("clickEffect");
+            clickEffect.style.opacity = 1;
+            setTimeout(function () {
+                clickEffect.style.opacity = 0;
+            }, 500); // Tempo em milissegundos que o efeito será exibido
+        }
+
+        document.getElementById("clickButton").addEventListener("click", increaseScore);
+        document.getElementById("openUpgradeMenu").addEventListener("click", openUpgradeMenu);
+        document.getElementById("openRebirthMenu").addEventListener("click", openRebirthMenu);
+
+    </script> 
+ 
+</body></html>
