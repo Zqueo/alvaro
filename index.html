@@ -1,99 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiro ao Álvaro</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-            width: 100vw;
-            height: 100vh;
-        }
-        p {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            margin: 0;
-            color: white;
-            font-size: 24px;
-            font-family: Arial, sans-serif;
-        }
-    </style>
-</head>
-<body>
-    <canvas></canvas>
-    <p>Pontuação: <span id="pontos">0</span></p>
-    <script>
-        var areaQueExibePontos = document.querySelector('#pontos');
-        var tela = document.querySelector('canvas');
-        var pincel = tela.getContext('2d');
-
-        var raio = 10;
-        var xAleatorio;
-        var yAleatorio;
-        var pontos = 0;
-
-        function ajustaCanvas() {
-            tela.width = window.innerWidth;
-            tela.height = window.innerHeight;
-        }
-
-        function desenhaCirculo(x, y, raio, cor) {
-            pincel.fillStyle = cor;
-            pincel.beginPath();
-            pincel.arc(x, y, raio, 0, 2 * Math.PI);
-            pincel.fill();
-        }
-
-        function limpaTela() {
-            pincel.clearRect(0, 0, tela.width, tela.height);
-            pincel.fillStyle = 'lightgray';
-            pincel.fillRect(0, 0, tela.width, tela.height);
-        }
-
-        function desenhaAlvo(x, y) {
-            desenhaCirculo(x, y, raio + 20, 'red');
-            desenhaCirculo(x, y, raio + 10, 'white');
-            desenhaCirculo(x, y, raio, 'red');
-        }
-
-        function posicaoAlvo(maximo) {
-            return Math.floor(Math.random() * maximo);
-        }
-
-        function atualizaTela() {
-            limpaTela();
-            xAleatorio = posicaoAlvo(tela.width - 2 * (raio + 20)) + (raio + 20);
-            yAleatorio = posicaoAlvo(tela.height - 2 * (raio + 20)) + (raio + 20);
-            desenhaAlvo(xAleatorio, yAleatorio);
-        }
-
-        function dispara(evento) {
-            var x = evento.pageX - tela.offsetLeft;
-            var y = evento.pageY - tela.offsetTop;
-            var distancia = Math.sqrt(Math.pow(x - xAleatorio, 2) + Math.pow(y - yAleatorio, 2));
-            if (distancia < raio + 20) {
-                pontos++;
-                alert('Acertou');
-                areaQueExibePontos.textContent = pontos;
+    <head>
+        <title>Tiro ao Álvaro</title>
+        <meta charset="UTF-8">
+        <meta name="description" content="Um simples Jogo da Velha">
+        <meta name="author" content="Zaqueu Silva">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body, html {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
             }
-        }
+            canvas {
+                display: block;
+                width: 100vw;
+                height: 100vh;
+            }
+            p {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                margin: 0;
+                color: black;
+                font-size: 24px;
+                font-family: Arial, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas></canvas>
+        <p>Pontuação: <span id="pontos">0</span></p>
+        <script>
+            var areaQueExibePontos = document.querySelector('#pontos');
+            var tela = document.querySelector('canvas');
+            var pincel = tela.getContext('2d');
 
-        window.addEventListener('resize', function() {
+            var raio = 10;
+            var xAleatorio;
+            var yAleatorio;
+            var pontos = 0;
+
+            function ajustaCanvas() {
+                tela.width = window.innerWidth;
+                tela.height = window.innerHeight;
+            }
+
+            function desenhaCirculo(x, y, raio, cor) {
+                pincel.fillStyle = cor;
+                pincel.beginPath();
+                pincel.arc(x, y, raio, 0, 2 * Math.PI);
+                pincel.fill();
+            }
+
+            function limpaTela() {
+                pincel.clearRect(0, 0, tela.width, tela.height);
+                pincel.fillStyle = 'lightgray';
+                pincel.fillRect(0, 0, tela.width, tela.height);
+            }
+
+            function desenhaAlvo(x, y) {
+                desenhaCirculo(x, y, raio + 20, 'red');
+                desenhaCirculo(x, y, raio + 10, 'white');
+                desenhaCirculo(x, y, raio, 'red');
+            }
+
+            function posicaoAlvo(maximo) {
+                return Math.floor(Math.random() * maximo);
+            }
+
+            function atualizaTela() {
+                limpaTela();
+                xAleatorio = posicaoAlvo(tela.width - 2 * (raio + 20)) + (raio + 20);
+                yAleatorio = posicaoAlvo(tela.height - 2 * (raio + 20)) + (raio + 20);
+                desenhaAlvo(xAleatorio, yAleatorio);
+            }
+
+            function dispara(evento) {
+                var x = evento.pageX - tela.offsetLeft;
+                var y = evento.pageY - tela.offsetTop;
+                var distancia = Math.sqrt(Math.pow(x - xAleatorio, 2) + Math.pow(y - yAleatorio, 2));
+                if (distancia < raio + 20) {
+                    pontos++;
+                    alert('Acertou');
+                    areaQueExibePontos.textContent = pontos;
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                ajustaCanvas();
+                atualizaTela();
+            });
+
+            tela.onclick = dispara;
+
             ajustaCanvas();
-            atualizaTela();
-        });
-
-        tela.onclick = dispara;
-
-        ajustaCanvas();
-        setInterval(atualizaTela, 1000);
-    </script>
-</body>
+            setInterval(atualizaTela, 1000);
+        </script>
+    </body>
 </html>
